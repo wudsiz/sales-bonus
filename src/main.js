@@ -20,16 +20,18 @@ function calculateSimpleRevenue(purchase, _product) {
  */
 
 function calculateBonusByProfit(index, total, seller) {
+  const profit = seller.profit || 0;
+
   if (index === total - 1) {
     return 0;
   }
   if (index === 0) {
-    return 0.15;
+    return profit * 0.15;
   }
   if (index === 1 || index === 2) {
-    return 0.10;
+    return profit * 0.10;
   }
-  return 0.05;
+  return profit * 0.05;
 }
 
 /**
@@ -46,7 +48,7 @@ function analyzeSalesData(data, options) {
     throw new Error('Поле purchase_records отсутствует или не является массивом');
   }
   if (data.purchase_records.length === 0) {
-    throw new Error('Массив purchase_records пуст');;
+    throw new Error('Массив purchase_records пуст');
   }
 
   if (!data.sellers || !Array.isArray(data.sellers)) {
@@ -116,8 +118,7 @@ if (!data.products || data.products.length === 0) {
   sellerStats.forEach((seller, index) => {
     const total = sellerStats.length;
     const bonusPercent = calculateBonus(index, total, seller);
-    seller.bonus = seller.profit * (bonusPercent / 100);
-
+    seller.bonus = calculateBonus(index, total, seller);
     seller.top_products = Object.entries(seller.products_sold)
       .map(([sku, quantity]) => ({ sku, quantity }))
       .sort((a, b) => b.quantity - a.quantity)
