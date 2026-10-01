@@ -4,6 +4,7 @@
  * @param _product карточка товара
  * @returns {number}
  */
+
 function calculateSimpleRevenue(purchase, _product) {
   const { discount, sale_price, quantity } = purchase;
   const discountDecimal = discount / 100;
@@ -23,15 +24,13 @@ function calculateBonusByProfit(index, total, seller) {
     return 0;
   }
   if (index === 0) {
-    return 15;
+    return 0.15;
   }
   if (index === 1 || index === 2) {
-    return 10;
+    return 0.10;
   }
-  return 5;
+  return 0.05;
 }
-
-
 
 /**
  * Функция для анализа данных продаж
@@ -47,8 +46,23 @@ function analyzeSalesData(data, options) {
     throw new Error('Поле purchase_records отсутствует или не является массивом');
   }
   if (data.purchase_records.length === 0) {
-    return [];
+    throw new Error('Массив purchase_records пуст');;
   }
+
+  if (!data.sellers || !Array.isArray(data.sellers)) {
+  throw new Error('Поле sellers отсутствует или не является массивом');
+}
+if (data.sellers.length === 0) {
+  throw new Error('Массив sellers пуст');
+}
+
+if (data.products && !Array.isArray(data.products)) {
+  throw new Error('Поле products не является массивом');
+}
+// Если products должно быть обязательно, то:
+if (!data.products || data.products.length === 0) {
+  throw new Error('Массив products пуст или отсутствует');
+}
 
   const { calculateRevenue, calculateBonus } = options;
 
